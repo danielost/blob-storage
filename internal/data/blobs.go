@@ -13,11 +13,15 @@ type BlobsQ interface {
 
 	Select() ([]Blob, error)
 
+	Delete(id int64) error
+
 	Transaction(fn func(q BlobsQ) error) error
 
 	Insert(data Blob) (*Blob, error)
 
 	Page(pageParams pgdb.OffsetPageParams) BlobsQ
+
+	FilterByID(id ...int64) BlobsQ
 }
 
 type Blob struct {

@@ -1,6 +1,7 @@
 package pg
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -29,15 +30,25 @@ func (q *blobsQ) New() data.BlobsQ {
 }
 
 func (q *blobsQ) Get() (*data.Blob, error) {
-	return nil, nil
+	var result data.Blob
+	err := q.db.Get(&result, q.sql)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	return &result, err
 }
 
-func (q *blobsQ) Delete() (*data.Blob, error) {
-	return nil, nil
+func (q *blobsQ) Delete(id int64) error {
+	stmt := sq.Delete(blobsTableName).Where(sq.Eq{"id": id})
+	err := q.db.Exec(stmt)
+	return err
 }
 
 func (q *blobsQ) Select() ([]data.Blob, error) {
-	return nil, nil
+	var result []data.Blob
+	err := q.db.Select(&result, q.sql)
+	return result, err
 }
 
 func (q *blobsQ) Transaction(fn func(q data.BlobsQ) error) error {
@@ -61,4 +72,9 @@ func (q *blobsQ) Insert(value data.Blob) (*data.Blob, error) {
 
 func (q *blobsQ) Page(pageParams pgdb.OffsetPageParams) data.BlobsQ {
 	return nil
+}
+
+func (q *blobsQ) FilterByID(ids ...int64) data.BlobsQ {
+	q.sql = q.sql.Where(sq.Eq{"n.id": ids})
+	return q
 }
