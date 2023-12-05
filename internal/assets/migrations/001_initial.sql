@@ -1,12 +1,13 @@
 -- +migrate Up
 
 CREATE TABLE blobs (
-    id character(52) NOT NULL,
-    type integer NOT NULL,
+    id bigserial primary key,
     value text NOT NULL,
     created_at timestamp without time zone
+    deleted_at timestamp without time zone
 );
 
 -- +migrate Down
 
-DROP TABLE blobs
+DROP TABLE blobs;
+
