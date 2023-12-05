@@ -10,3 +10,5 @@ properties:
     type: string
     description: blob type
     example: product_list
+    enum:
+      - blob

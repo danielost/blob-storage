@@ -1,0 +1,24 @@
+allOf:
+  - $ref: '#/components/schemas/UserKey'
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        properties:
+          login:
+            description: user login
+            type: string
+            example: user
+          password:
+            description: user password
+            type: string
+            example: password
+          created_at:
+            type: string
+            format: time.Time
+        required:
+          - login
+          - password
+          - created_at

@@ -4,6 +4,18 @@ allOf:
     required:
       - attributes
     properties:
+      # relationships:
+      #     type: object
+      #     required:
+      #       - user
+      #     properties:
+      #       user:
+      #         type: object
+      #         properties:
+      #           data:
+      #             type: object
+      #             properties:
+      #               $ref: '#/components/schemas/UserKey'
       attributes:
         type: object
         properties:
