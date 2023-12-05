@@ -20,11 +20,11 @@ func (s *service) router() chi.Router {
 	)
 	r.Route("/integrations/blobs", func(r chi.Router) {
 		r.Post("/", handlers.CreateBlob)
-		// r.Get("/", func(w http.ResponseWriter, r *http.Request) {})
-		// r.Route("/{id}", func(r chi.Router) {
-		// 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {})
-		// 	r.Delete("/", func(w http.ResponseWriter, r *http.Request) {})
-		// })
+		r.Get("/", handlers.GetBlobsList)
+		r.Route("/{id}", func(r chi.Router) {
+			r.Get("/", handlers.GetBlob)
+			r.Delete("/", handlers.DeleteBlob)
+		})
 	})
 
 	return r
