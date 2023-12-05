@@ -3,12 +3,11 @@ parameters:
     in: path
     required: true
     schema:
-      type: int
-
+      type: integer
 get:
   tags:
     - Blobs
-  summary: Get Blob by Id
+  summary: Get a blob by Id
   operationId: getBlob
   responses:
     '200':
@@ -21,14 +20,11 @@ get:
               data:
                 type: object
                 $ref: '#/components/schemas/Blob'
-
-
 delete:
   tags:
     - Blobs
-  summary: Delete Blob by Id
+  summary: Delete a blob by Id
   operationId: deleteBlob
   responses:
     '204':
       description: Blob deleted
-
