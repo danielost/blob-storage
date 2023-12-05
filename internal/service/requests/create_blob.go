@@ -6,6 +6,7 @@ import (
 
 	"gitlab.com/distributed_lab/logan/v3/errors"
 
+	. "github.com/go-ozzo/ozzo-validation"
 	"gitlab.com/dl7850949/blob-storage/resources"
 )
 
@@ -13,12 +14,21 @@ type CreateBlobRequest struct {
 	Data resources.CreateBlob
 }
 
-func NewCreateBlobRequest(r *http.Request) (*CreateBlobRequest, error) {
+func NewCreateBlobRequest(r *http.Request) (CreateBlobRequest, error) {
 	request := resources.CreateBlob{}
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return nil, errors.Wrap(err, "failed to unmarshal")
+		return CreateBlobRequest{}, errors.Wrap(err, "failed to unmarshal")
 	}
 
-	return &CreateBlobRequest{request}, nil
+	result := CreateBlobRequest{request}
+	return result, validateCreateBlobRequest(result)
+}
+
+func validateCreateBlobRequest(request CreateBlobRequest) error {
+	data := &request.Data
+
+	return ValidateStruct(data,
+		Field(&data.Value, Required),
+	)
 }
