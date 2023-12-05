@@ -1,0 +1,19 @@
+allOf:
+  - $ref: '#/components/schemas/BlobKey'
+  - type: object
+    required:
+      - attributes
+    properties:
+      attributes:
+        type: object
+        properties:
+          value:
+            description: arbitrary text
+            type: string
+            example: foobar
+          created_at:
+            type: string
+            format: time.Time
+        required:
+          - value
+          - created_at

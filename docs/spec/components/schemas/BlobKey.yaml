@@ -1,0 +1,12 @@
+type: object
+required:
+  - id
+  - type
+properties:
+  id:
+    type: string
+    example: myblob
+  type:
+    type: string
+    description: blob type
+    example: product_list
