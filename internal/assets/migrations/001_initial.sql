@@ -8,5 +8,4 @@ CREATE TABLE blobs (
 
 -- +migrate Down
 
-DROP TABLE blobs;
-
+DROP TABLE IF EXISTS blobs;
