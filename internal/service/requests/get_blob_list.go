@@ -12,7 +12,7 @@ type GetNotificationsListRequest struct {
 }
 
 func NewGetBlobsListRequest(r *http.Request) (GetNotificationsListRequest, error) {
-	request := GetNotificationsListRequest{}
+	var request GetNotificationsListRequest
 
 	err := urlval.Decode(r.URL.Query(), &request)
 	if err != nil {

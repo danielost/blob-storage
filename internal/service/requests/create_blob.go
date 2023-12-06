@@ -15,20 +15,19 @@ type CreateBlobRequest struct {
 }
 
 func NewCreateBlobRequest(r *http.Request) (CreateBlobRequest, error) {
-	request := resources.CreateBlob{}
+	var request CreateBlobRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return CreateBlobRequest{}, errors.Wrap(err, "failed to unmarshal")
 	}
 
-	result := CreateBlobRequest{request}
-	return result, validateCreateBlobRequest(result)
+	return request, validateCreateBlobRequest(request)
 }
 
 func validateCreateBlobRequest(request CreateBlobRequest) error {
-	data := &request.Data
+	attrs := &request.Data.Attributes
 
-	return ValidateStruct(data,
-		Field(&data.Value, Required),
+	return ValidateStruct(attrs,
+		Field(&attrs.Value, Required),
 	)
 }
