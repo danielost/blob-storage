@@ -1,13 +1,15 @@
-type: object
-required:
-  - attributes
-properties:
-  attributes:
-    type: object
-    properties:
-      value:
-        description: arbitrary text
-        type: string
-        example: my awesome blob
+allOf:
+  - $ref: '#/components/schemas/CreateBlobKey'
+  - type: object
     required:
-      - value
+      - attributes
+    properties:
+      attributes:
+        type: object
+        properties:
+          value:
+            description: arbitrary text
+            type: string
+            example: my awesome blob
+        required:
+        - value

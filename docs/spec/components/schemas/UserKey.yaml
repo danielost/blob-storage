@@ -4,3 +4,11 @@ required:
 properties:
   id:
     type: string
+  type:
+    type: string
+    description: user type
+    example: product_list
+    enum:
+      - user
+      - admin
+      

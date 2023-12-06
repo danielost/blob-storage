@@ -1,18 +1,20 @@
-type: object
-required:
-  - attributes
-properties:
-  attributes:
-    type: object
-    properties:
-      login:
-        description: user login
-        type: string
-        example: user
-      password:
-        description: user password
-        type: string
-        example: password
+allOf:
+  - $ref: '#/components/schemas/UserDataKey'
+  - type: object
     required:
-      - login
-      - password
+      - attributes
+    properties:
+      attributes:
+        type: object
+        properties:
+          login:
+            description: user login
+            type: string
+            example: my_awesome_login
+          password:
+            description: user password
+            type: string
+            example: mysecretpassword
+        required:
+          - login
+          - password

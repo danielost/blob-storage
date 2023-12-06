@@ -1,13 +1,14 @@
-type: object
-required:
-  - attributes
-properties:
-  attributes:
-    type: object
-    properties:
-      token:
-        description: Bearer token
-        type: string
+allOf:
+  - $ref: '#/components/schemas/TokenKey'
+  - type: object
     required:
-      - token
-      
+      - attributes
+    properties:
+      attributes:
+        type: object
+        properties:
+          value:
+            description: bearer token
+            type: string
+        required:
+          - value
