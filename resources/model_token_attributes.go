@@ -6,5 +6,5 @@ package resources
 
 type TokenAttributes struct {
 	// bearer token
-	Value string `json:"value"`
+	Token string `json:"token"`
 }
