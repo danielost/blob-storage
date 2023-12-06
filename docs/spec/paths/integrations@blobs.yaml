@@ -1,5 +1,5 @@
 parameters:
-    - $ref: '#/components/headers/bearer'
+  - $ref: '#/components/headers/bearer'
 
 post:
   tags:
@@ -28,6 +28,11 @@ post:
               data:
                 type: object
                 $ref: '#/components/schemas/Blob'
+    '401':
+      description: Unauthorized
+    '500':
+      description: Failed to create a blob
+
 
 get:
   tags:
@@ -60,4 +65,8 @@ get:
                     description: "link to the next page"
                   self:
                     type: string
-                    description: "link to the current page"
+                    description: "link to the current page"         
+    '401':
+      description: Unauthorized
+    '500':
+      description: Failed to fetch blobs

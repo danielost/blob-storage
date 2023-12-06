@@ -20,7 +20,16 @@ get:
             properties:
               data:
                 type: object
-                $ref: '#/components/schemas/Blob'
+                $ref: '#/components/schemas/Blob'   
+    '401':
+      description: Unauthorized
+    '404':
+      description: Blob not found
+    '403':
+      description: Forbidden
+    '500':
+      description: Failed to fetch a blob
+
 delete:
   tags:
     - Blobs
@@ -29,3 +38,11 @@ delete:
   responses:
     '204':
       description: Blob deleted
+    '401':
+      description: Unauthorized
+    '404':
+      description: Blob not found
+    '403':
+      description: Forbidden
+    '500':
+      description: Failed to fetch a blob

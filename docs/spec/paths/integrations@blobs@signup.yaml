@@ -25,3 +25,7 @@ post:
               data:
                 type: object
                 $ref: '#/components/schemas/User'
+    '409':
+      description: Login is taken
+    '500':
+      description: Failed to sign up
