@@ -1,4 +1,5 @@
 parameters:
+  - $ref: '#/components/headers/bearer'
   - name: id
     in: path
     required: true

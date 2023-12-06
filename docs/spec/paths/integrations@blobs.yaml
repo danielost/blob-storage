@@ -1,3 +1,6 @@
+parameters:
+    - $ref: '#/components/headers/bearer'
+
 post:
   tags:
     - Blobs
@@ -26,13 +29,13 @@ post:
                 type: object
                 $ref: '#/components/schemas/Blob'
 
-
 get:
   tags:
     - Blobs
   summary: Get blobs list
   operationId: getBlobsList
   parameters:
+    # - $ref: '#/components/headers/bearer'
     - $ref: '#/components/parameters/pageNumberParam'
     - $ref: '#/components/parameters/pageLimitParam'
     - $ref: '#/components/parameters/sortingParam'
