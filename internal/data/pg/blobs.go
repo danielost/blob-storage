@@ -60,8 +60,8 @@ func (q *blobsQ) Transaction(fn func(q data.BlobsQ) error) error {
 func (q *blobsQ) Insert(value data.Blob) (*data.Blob, error) {
 	value.CreatedAt = time.Now().UTC()
 	clauses := structs.Map(value)
-	fmt.Println(clauses)
 	clauses["value"] = value.Value
+	clauses["owner_id"] = value.OwnerId
 
 	var result data.Blob
 	stmt := sq.Insert(blobsTableName).SetMap(clauses).Suffix("returning *")
@@ -76,5 +76,10 @@ func (q *blobsQ) Page(pageParams pgdb.OffsetPageParams) data.BlobsQ {
 
 func (q *blobsQ) FilterByID(ids ...int64) data.BlobsQ {
 	q.sql = q.sql.Where(sq.Eq{"n.id": ids})
+	return q
+}
+
+func (q *blobsQ) FilterByOwnerId(ids ...int64) data.BlobsQ {
+	q.sql = q.sql.Where(sq.Eq{"n.owner_id": ids})
 	return q
 }
