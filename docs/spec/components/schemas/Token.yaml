@@ -7,8 +7,8 @@ allOf:
       attributes:
         type: object
         properties:
-          value:
+          token:
             description: bearer token
             type: string
         required:
-          - value
+          - token
