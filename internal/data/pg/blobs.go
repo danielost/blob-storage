@@ -71,7 +71,8 @@ func (q *blobsQ) Insert(value data.Blob) (*data.Blob, error) {
 }
 
 func (q *blobsQ) Page(pageParams pgdb.OffsetPageParams) data.BlobsQ {
-	return nil
+	q.sql = pageParams.ApplyTo(q.sql, "id")
+	return q
 }
 
 func (q *blobsQ) FilterByID(ids ...int64) data.BlobsQ {
