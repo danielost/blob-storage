@@ -13,7 +13,7 @@ post:
           properties:
             data:
               type: object
-              $ref: '#/components/schemas/Blob'
+              $ref: '#/components/schemas/CreateBlob'
   responses:
     '200':
       description: Success
@@ -58,4 +58,3 @@ get:
                   self:
                     type: string
                     description: "link to the current page"
-
