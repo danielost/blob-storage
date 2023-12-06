@@ -5,9 +5,9 @@ properties:
   attributes:
     type: object
     properties:
-      value:
-        description: arbitrary text
+      token:
+        description: Bearer token
         type: string
-        example: my awesome blob
     required:
-      - value
+      - token
+      
