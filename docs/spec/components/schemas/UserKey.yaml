@@ -10,5 +10,4 @@ properties:
     example: product_list
     enum:
       - user
-      - admin
       
