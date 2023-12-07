@@ -32,7 +32,7 @@ func GetBlob(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if blob.OwnerId != ownerId {
-		helpers.Log(r).Info("operation forbidden")
+		helpers.Log(r).Warn("operation forbidden")
 		ape.RenderErr(w, problems.Forbidden())
 		return
 	}

@@ -26,12 +26,6 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err != nil {
-		helpers.Log(r).WithError(err).Error("failed to fetch user")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-
 	if existingUser != nil {
 		helpers.Log(r).WithError(err).Warn("login is taken")
 		ape.RenderErr(w, problems.Conflict())
