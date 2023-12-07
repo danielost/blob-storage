@@ -9,6 +9,6 @@ properties:
   type:
     type: string
     description: blob type
-    example: product_list
+    example: blob
     enum:
       - blob

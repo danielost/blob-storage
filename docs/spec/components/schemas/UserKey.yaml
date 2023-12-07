@@ -7,7 +7,7 @@ properties:
   type:
     type: string
     description: user type
-    example: product_list
+    example: user
     enum:
       - user
       
