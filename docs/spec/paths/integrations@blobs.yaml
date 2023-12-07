@@ -1,5 +1,5 @@
 parameters:
-  - $ref: '#/components/headers/bearer'
+  - $ref: '#/components/parameters/bearer'
 
 post:
   tags:
@@ -40,7 +40,6 @@ get:
   summary: Get blobs list
   operationId: getBlobsList
   parameters:
-    # - $ref: '#/components/headers/bearer'
     - $ref: '#/components/parameters/pageNumberParam'
     - $ref: '#/components/parameters/pageLimitParam'
     - $ref: '#/components/parameters/sortingParam'

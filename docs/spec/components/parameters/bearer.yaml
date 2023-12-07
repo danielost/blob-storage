@@ -1,6 +1,6 @@
 in: header
 name: 'x-jwt-token'
-description: JWT token
 required: true
 schema:
   type: string
+  description: 'JWT token'
