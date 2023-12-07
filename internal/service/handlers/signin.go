@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"gitlab.com/distributed_lab/ape"
@@ -16,8 +17,9 @@ import (
 func SignIn(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewAuthRequest(r)
 	if err != nil {
-		Log(r).WithError(err).Info("wrong request")
+		Log(r).WithError(err).Error("failed to parse the request")
 		ape.RenderErr(w, problems.BadRequest(err)...)
+		return
 	}
 
 	user, err := UsersQ(r).FilterByLogin(request.Data.Attributes.Login).Get()
@@ -28,13 +30,13 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user == nil {
-		Log(r).WithError(err).Error("user not found")
+		Log(r).WithError(err).Warn("user not found")
 		ape.RenderErr(w, problems.NotFound())
 		return
 	}
 
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Data.Attributes.Password)) != nil {
-		Log(r).WithError(err).Error("invalid password")
+		Log(r).WithError(err).Warn("invalid password")
 		ape.RenderErr(w, problems.Unauthorized())
 		return
 	}
@@ -46,7 +48,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := resources.TokenResponse{
+	response := resources.TokenResponse{
 		Data: resources.Token{
 			Key: resources.NewKeyInt64(0, resources.BEARER_TOKEN),
 			Attributes: resources.TokenAttributes{
@@ -55,14 +57,14 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	ape.Render(w, result)
+	ape.Render(w, response)
 }
 
 func generateJWT(user data.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"login":     user.Login,
 		"id":        user.ID,
-		"expiresAt": 15000,
+		"expiresAt": time.Now().Add(time.Minute * 5).UTC(),
 	})
 	secret := os.Getenv("JWT_SECRET")
 	return token.SignedString([]byte(secret))
