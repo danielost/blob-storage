@@ -22,7 +22,7 @@ allOf:
           value:
             description: arbitrary text
             type: string
-            example: foobar
+            example: my awesome blob
           created_at:
             type: string
             format: time.Time

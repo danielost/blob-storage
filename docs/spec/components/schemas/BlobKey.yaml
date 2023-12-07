@@ -5,7 +5,7 @@ required:
 properties:
   id:
     type: string
-    example: myblob
+    example: '1'
   type:
     type: string
     description: blob type
