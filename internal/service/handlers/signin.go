@@ -22,8 +22,9 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := getUserByLogin(w, r, request.Data.Attributes.Login)
-	if !ok {
+	user, jsonErr := helpers.GetUserByLogin(r, request.Data.Attributes.Login)
+	if jsonErr != nil {
+		ape.RenderErr(w, jsonErr)
 		return
 	}
 
@@ -66,15 +67,4 @@ func generateJWT(user data.User) (string, error) {
 	})
 	secret := os.Getenv("JWT_SECRET")
 	return token.SignedString([]byte(secret))
-}
-
-func getUserByLogin(w http.ResponseWriter, r *http.Request, login string) (*data.User, bool) {
-	user, err := helpers.UsersQ(r).FilterByLogin(login).Get()
-	if err != nil {
-		helpers.Log(r).WithError(err).Error("failed to fetch user")
-		ape.RenderErr(w, problems.InternalError())
-		return nil, false
-	}
-
-	return user, true
 }

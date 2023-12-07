@@ -20,8 +20,9 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	existingUser, ok := getUserByLogin(w, r, request.Data.Attributes.Login)
-	if !ok {
+	existingUser, jsonErr := helpers.GetUserByLogin(r, request.Data.Attributes.Login)
+	if jsonErr != nil {
+		ape.RenderErr(w, jsonErr)
 		return
 	}
 
