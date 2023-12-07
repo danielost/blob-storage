@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"gitlab.com/dl7850949/blob-storage/internal/data"
+	"gitlab.com/dl7850949/blob-storage/internal/helpers"
+	"gitlab.com/dl7850949/blob-storage/internal/middleware"
 	"gitlab.com/dl7850949/blob-storage/internal/service/requests"
 	"gitlab.com/dl7850949/blob-storage/resources"
 
@@ -17,12 +19,21 @@ func GetBlobsList(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
-	blobsQ := BlobsQ(r)
 
-	blobs, err := blobsQ.Select()
+	ownerId, err := middleware.GetIdFromJWT(r)
 	if err != nil {
-		Log(r).WithError(err).Error("failed to get blobs")
-		ape.Render(w, problems.InternalError())
+		helpers.Log(r).WithError(err).Error("failed to get id from JWT")
+		ape.RenderErr(w, problems.InternalError())
+		return
+	}
+
+	blobsQ := helpers.BlobsQ(r)
+	blobsQ.Page(request.OffsetPageParams)
+
+	blobs, err := blobsQ.FilterByOwnerId(ownerId).Select()
+	if err != nil {
+		helpers.Log(r).WithError(err).Error("failed to get blobs")
+		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
@@ -37,7 +48,7 @@ func GetBlobsList(w http.ResponseWriter, r *http.Request) {
 func newBlobsList(blobs []data.Blob) []resources.Blob {
 	result := make([]resources.Blob, len(blobs))
 	for i, blob := range blobs {
-		result[i] = newBlobModel(blob)
+		result[i] = newBlobModel(&blob, blob.OwnerId)
 	}
 	return result
 }

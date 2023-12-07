@@ -9,12 +9,14 @@ import (
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/distributed_lab/logan/v3/errors"
+	"gitlab.com/dl7850949/blob-storage/internal/helpers"
 )
 
 func ValidateJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, err := ParseJWT(r)
 		if err != nil || !token.Valid {
+			helpers.Log(r).Warn("token is invalid")
 			ape.RenderErr(w, problems.Unauthorized())
 			return
 		}

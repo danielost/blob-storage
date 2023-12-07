@@ -9,6 +9,7 @@ import (
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/dl7850949/blob-storage/internal/data"
+	"gitlab.com/dl7850949/blob-storage/internal/helpers"
 	"gitlab.com/dl7850949/blob-storage/internal/service/requests"
 	"gitlab.com/dl7850949/blob-storage/resources"
 	"golang.org/x/crypto/bcrypt"
@@ -17,33 +18,30 @@ import (
 func SignIn(w http.ResponseWriter, r *http.Request) {
 	request, err := requests.NewAuthRequest(r)
 	if err != nil {
-		Log(r).WithError(err).Error("failed to parse the request")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 
-	user, err := UsersQ(r).FilterByLogin(request.Data.Attributes.Login).Get()
-	if err != nil {
-		Log(r).WithError(err).Error("failed to fetch user")
-		ape.RenderErr(w, problems.InternalError())
+	user, ok := getUserByLogin(w, r, request.Data.Attributes.Login)
+	if !ok {
 		return
 	}
 
 	if user == nil {
-		Log(r).WithError(err).Warn("user not found")
+		helpers.Log(r).WithError(err).Warn("user not found")
 		ape.RenderErr(w, problems.NotFound())
 		return
 	}
 
 	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Data.Attributes.Password)) != nil {
-		Log(r).WithError(err).Warn("invalid password")
+		helpers.Log(r).WithError(err).Warn("invalid password")
 		ape.RenderErr(w, problems.Unauthorized())
 		return
 	}
 
 	token, err := generateJWT(*user)
 	if err != nil {
-		Log(r).WithError(err).Error("failed to generate JWT")
+		helpers.Log(r).WithError(err).Error("failed to generate JWT")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
@@ -68,4 +66,15 @@ func generateJWT(user data.User) (string, error) {
 	})
 	secret := os.Getenv("JWT_SECRET")
 	return token.SignedString([]byte(secret))
+}
+
+func getUserByLogin(w http.ResponseWriter, r *http.Request, login string) (*data.User, bool) {
+	user, err := helpers.UsersQ(r).FilterByLogin(login).Get()
+	if err != nil {
+		helpers.Log(r).WithError(err).Error("failed to fetch user")
+		ape.RenderErr(w, problems.InternalError())
+		return nil, false
+	}
+
+	return user, true
 }

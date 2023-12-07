@@ -16,20 +16,19 @@ func GetBlob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	blob, err := BlobsQ(r).FilterByID(request.BlobID).Get()
-	if err != nil {
-		Log(r).WithError(err).Error("failed to get blob from DB")
-		ape.Render(w, problems.InternalError())
-		return
-	}
-	if blob == nil {
-		ape.Render(w, problems.NotFound())
+	blob, ok := getBlobById(w, r, request.BlobID)
+	if !ok {
 		return
 	}
 
-	result := resources.BlobResponse{
-		Data: newBlobModel(*blob),
+	ownerId, allowed := isAllowed(w, r, blob)
+	if !allowed {
+		return
 	}
 
-	ape.Render(w, result)
+	response := resources.BlobResponse{
+		Data: newBlobModel(blob, ownerId),
+	}
+
+	ape.Render(w, response)
 }

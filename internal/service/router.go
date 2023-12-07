@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/dl7850949/blob-storage/internal/data/pg"
+	"gitlab.com/dl7850949/blob-storage/internal/helpers"
 	"gitlab.com/dl7850949/blob-storage/internal/middleware"
 	"gitlab.com/dl7850949/blob-storage/internal/service/handlers"
 )
@@ -15,9 +16,9 @@ func (s *service) router() chi.Router {
 		ape.RecoverMiddleware(s.log),
 		ape.LoganMiddleware(s.log),
 		ape.CtxMiddleware(
-			handlers.CtxLog(s.log),
-			handlers.CtxBlobsQ(pg.NewBlobsQ(s.db)),
-			handlers.CtxUsersQ(pg.NewUsersQ(s.db)),
+			helpers.CtxLog(s.log),
+			helpers.CtxBlobsQ(pg.NewBlobsQ(s.db)),
+			helpers.CtxUsersQ(pg.NewUsersQ(s.db)),
 		),
 	)
 
