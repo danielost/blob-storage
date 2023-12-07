@@ -7,12 +7,12 @@ import (
 	"gitlab.com/distributed_lab/urlval"
 )
 
-type GetNotificationsListRequest struct {
+type GetBlobsListRequest struct {
 	pgdb.OffsetPageParams
 }
 
-func NewGetBlobsListRequest(r *http.Request) (GetNotificationsListRequest, error) {
-	var request GetNotificationsListRequest
+func NewGetBlobsListRequest(r *http.Request) (GetBlobsListRequest, error) {
+	var request GetBlobsListRequest
 
 	err := urlval.Decode(r.URL.Query(), &request)
 	if err != nil {

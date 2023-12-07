@@ -18,7 +18,7 @@ func NewAuthRequest(r *http.Request) (AuthRequest, error) {
 	var request AuthRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return AuthRequest{}, errors.Wrap(err, "failed to unmarshal")
+		return request, errors.Wrap(err, "failed to unmarshal")
 	}
 
 	return request, validateAuthRequest(request)
