@@ -63,7 +63,7 @@ func generateJWT(user data.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"login":     user.Login,
 		"id":        user.ID,
-		"expiresAt": time.Now().Add(time.Minute * 5).UTC(),
+		"expiresAt": time.Now().Add(time.Minute * 5).UTC().String(),
 	})
 	secret := os.Getenv("JWT_SECRET")
 	return token.SignedString([]byte(secret))

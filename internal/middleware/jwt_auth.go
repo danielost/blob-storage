@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"gitlab.com/distributed_lab/ape"
@@ -16,7 +17,35 @@ func ValidateJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, err := ParseJWT(r)
 		if err != nil || !token.Valid {
-			helpers.Log(r).Warn("token is invalid")
+			helpers.Log(r).WithError(err).Warn("token is invalid")
+			ape.RenderErr(w, problems.Unauthorized())
+			return
+		}
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			helpers.Log(r).Error("couldn't process jwt claims")
+			ape.RenderErr(w, problems.InternalError())
+			return
+		}
+
+		exp, ok := claims["expiresAt"]
+		if !ok {
+			helpers.Log(r).Warn("no expiration date in jwt claims")
+			ape.RenderErr(w, problems.Unauthorized())
+			return
+		}
+
+		layout := "2006-01-02 15:04:05 -0700 MST"
+		expTime, err := time.Parse(layout, exp.(string))
+		if err != nil {
+			helpers.Log(r).WithError(err).Warn("error parsing expiration date of jwt")
+			ape.RenderErr(w, problems.Unauthorized())
+			return
+		}
+
+		if time.Now().After(expTime) {
+			helpers.Log(r).Warn("jwt expired")
 			ape.RenderErr(w, problems.Unauthorized())
 			return
 		}
