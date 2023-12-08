@@ -21,8 +21,8 @@ allOf:
         properties:
           value:
             description: arbitrary text
-            type: string
-            example: my awesome blob
+            type: object
+            format: json.RawMessage
           created_at:
             type: string
             format: time.Time

@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"time"
 
 	"gitlab.com/distributed_lab/kit/pgdb"
@@ -27,8 +28,8 @@ type BlobsQ interface {
 }
 
 type Blob struct {
-	ID        int64     `db:"id" structs:"-"`
-	CreatedAt time.Time `db:"created_at" structs:"created_at"`
-	Value     string    `db:"value" structs:"-"`
-	OwnerId   int64     `db:"owner_id" structs:"-"`
+	ID        int64           `db:"id" structs:"-"`
+	CreatedAt time.Time       `db:"created_at" structs:"created_at"`
+	Value     json.RawMessage `db:"value" structs:"-"`
+	OwnerId   int64           `db:"owner_id" structs:"-"`
 }

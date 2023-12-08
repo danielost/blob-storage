@@ -13,5 +13,4 @@ const (
 	BEARER_TOKEN ResourceType = "bearer-token"
 	USER_DATA    ResourceType = "user-data"
 	USER         ResourceType = "user"
-	ADMIN        ResourceType = "admin"
 )

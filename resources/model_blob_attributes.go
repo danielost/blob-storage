@@ -4,10 +4,13 @@
 
 package resources
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type BlobAttributes struct {
 	CreatedAt time.Time `json:"created_at"`
 	// arbitrary text
-	Value string `json:"value"`
+	Value json.RawMessage `json:"value"`
 }
