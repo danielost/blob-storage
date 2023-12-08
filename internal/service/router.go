@@ -1,6 +1,8 @@
 package service
 
 import (
+	"os"
+
 	"github.com/go-chi/chi"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/dl7850949/blob-storage/internal/data/pg"
@@ -11,6 +13,7 @@ import (
 
 func (s *service) router() chi.Router {
 	r := chi.NewRouter()
+	jwtSecret := os.Getenv("JWT_SECRET")
 
 	r.Use(
 		ape.RecoverMiddleware(s.log),
@@ -26,7 +29,7 @@ func (s *service) router() chi.Router {
 		// Protected routes
 		r.Route("/", func(r chi.Router) {
 			// Custom JWT middleware
-			r.Use(middleware.ValidateJWT)
+			r.Use(middleware.ValidateJWT(jwtSecret))
 
 			r.Post("/", handlers.CreateBlob)
 			r.Get("/", handlers.GetBlobsList)

@@ -2,14 +2,11 @@ package handlers
 
 import (
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
-	"gitlab.com/dl7850949/blob-storage/internal/data"
 	"gitlab.com/dl7850949/blob-storage/internal/helpers"
+	"gitlab.com/dl7850949/blob-storage/internal/middleware"
 	"gitlab.com/dl7850949/blob-storage/internal/service/requests"
 	"gitlab.com/dl7850949/blob-storage/resources"
 	"golang.org/x/crypto/bcrypt"
@@ -40,7 +37,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := generateJWT(*user)
+	token, err := middleware.GenerateJWT(*user)
 	if err != nil {
 		helpers.Log(r).WithError(err).Error("failed to generate JWT")
 		ape.RenderErr(w, problems.InternalError())
@@ -57,14 +54,4 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ape.Render(w, response)
-}
-
-func generateJWT(user data.User) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"login":     user.Login,
-		"id":        user.ID,
-		"expiresAt": time.Now().Add(time.Minute * 5).UTC().String(),
-	})
-	secret := os.Getenv("JWT_SECRET")
-	return token.SignedString([]byte(secret))
 }
