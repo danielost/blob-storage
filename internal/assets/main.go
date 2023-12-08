@@ -1,9 +1,8 @@
 package assets
 
 import (
-	"github.com/gobuffalo/packr/v2"
+	"embed"
 )
 
-//go:generate packr2 clean
-//go:generate packr2
-var Migrations = packr.New("migrations", "./migrations")
+//go:embed migrations/*.sql
+var Migrations embed.FS

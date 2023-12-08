@@ -7,8 +7,9 @@ import (
 	"gitlab.com/dl7850949/blob-storage/internal/config"
 )
 
-var migrations = &migrate.PackrMigrationSource{
-	Box: assets.Migrations,
+var migrations = &migrate.EmbedFileSystemMigrationSource{
+	FileSystem: assets.Migrations,
+	Root:       "migrations",
 }
 
 func MigrateUp(cfg config.Config) error {
