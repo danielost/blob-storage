@@ -61,7 +61,7 @@ func ValidateJWT(secret string) func(http.Handler) http.Handler {
 }
 
 func ParseJWT(r *http.Request) (*jwt.Token, error) {
-	tokenString := r.Header.Get("x-jwt-token")
+	tokenString := r.Header.Get("Authorization")[len("Bearer "):]
 
 	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

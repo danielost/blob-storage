@@ -1,6 +1,7 @@
 in: header
-name: 'x-jwt-token'
+name: 'Authorization'
 required: true
 schema:
   type: string
   description: 'JWT token'
+  example: 'Bearer <jwt_token>'
