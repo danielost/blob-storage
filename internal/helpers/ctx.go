@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"gitlab.com/dl7850949/blob-storage/internal/data"
+	horizon2 "gitlab.com/dl7850949/blob-storage/internal/data/horizon"
 
 	"gitlab.com/distributed_lab/logan/v3"
 )
@@ -14,6 +15,7 @@ type ctxKey int
 const (
 	logCtxKey ctxKey = iota
 	blobsQCtxKey
+	horizonBlobsQCtxKey
 	usersQCtxKey
 )
 
@@ -35,6 +37,16 @@ func CtxBlobsQ(entry data.BlobsQ) func(context.Context) context.Context {
 
 func BlobsQ(r *http.Request) data.BlobsQ {
 	return r.Context().Value(blobsQCtxKey).(data.BlobsQ).New()
+}
+
+func CtxHBlobsQ(q *horizon2.BlobsQ) func(context.Context) context.Context {
+	return func(ctx context.Context) context.Context {
+		return context.WithValue(ctx, horizonBlobsQCtxKey, q)
+	}
+}
+
+func HBlobsQ(r *http.Request) *horizon2.BlobsQ {
+	return r.Context().Value(horizonBlobsQCtxKey).(*horizon2.BlobsQ)
 }
 
 func CtxUsersQ(entry data.UsersQ) func(context.Context) context.Context {

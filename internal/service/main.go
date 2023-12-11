@@ -9,6 +9,7 @@ import (
 	"gitlab.com/distributed_lab/logan/v3"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 	"gitlab.com/dl7850949/blob-storage/internal/config"
+	"gitlab.com/tokend/horizon-connector"
 )
 
 type service struct {
@@ -16,6 +17,7 @@ type service struct {
 	copus    types.Copus
 	listener net.Listener
 	db       *pgdb.DB
+	horizon  *horizon.Connector
 }
 
 func (s *service) run() error {
@@ -35,6 +37,7 @@ func newService(cfg config.Config) *service {
 		copus:    cfg.Copus(),
 		listener: cfg.Listener(),
 		db:       cfg.DB(),
+		horizon:  cfg.Horizon(),
 	}
 }
 

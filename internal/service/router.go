@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"gitlab.com/distributed_lab/ape"
+	horizon2 "gitlab.com/dl7850949/blob-storage/internal/data/horizon"
 	"gitlab.com/dl7850949/blob-storage/internal/data/pg"
 	"gitlab.com/dl7850949/blob-storage/internal/helpers"
 	"gitlab.com/dl7850949/blob-storage/internal/middleware"
@@ -14,6 +15,7 @@ import (
 func (s *service) router() chi.Router {
 	r := chi.NewRouter()
 	jwtSecret := os.Getenv("JWT_SECRET")
+	horizonBlobsQ := horizon2.NewBlobsQ(s.log, s.horizon)
 
 	r.Use(
 		ape.RecoverMiddleware(s.log),
@@ -21,6 +23,7 @@ func (s *service) router() chi.Router {
 		ape.CtxMiddleware(
 			helpers.CtxLog(s.log),
 			helpers.CtxBlobsQ(pg.NewBlobsQ(s.db)),
+			helpers.CtxHBlobsQ(horizonBlobsQ),
 			helpers.CtxUsersQ(pg.NewUsersQ(s.db)),
 		),
 	)
