@@ -96,8 +96,8 @@ func CtxCoreInfo(s data.Info) func(context.Context) context.Context {
 func CoreInfo(r *http.Request) *regources.Info {
 	info, err := r.Context().Value(coreInfoCtxKey).(data.Info).Info()
 	if err != nil {
-		//TODO handle error
-		panic(err)
+		Log(r).WithError(err).Error(err.Error())
+		return nil
 	}
 	return info
 }

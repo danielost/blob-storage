@@ -7,7 +7,6 @@ import (
 	"gitlab.com/distributed_lab/ape/problems"
 	horizon2 "gitlab.com/dl7850949/blob-storage/internal/data/horizon"
 	"gitlab.com/dl7850949/blob-storage/internal/helpers"
-	"gitlab.com/dl7850949/blob-storage/internal/middleware"
 	"gitlab.com/dl7850949/blob-storage/internal/service/requests"
 )
 
@@ -18,16 +17,8 @@ func CreateBlob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userId, err := middleware.GetIdFromJWT(r)
-	if err != nil {
-		helpers.Log(r).WithError(err).Error("failed to get id from JWT")
-		ape.RenderErr(w, problems.InternalError())
-		return
-	}
-
 	blob := horizon2.Blob{
-		Value:   request.Data.Attributes.Value,
-		OwnerId: userId,
+		Value: request.Data.Attributes.Value,
 	}
 
 	waitForIngest := true

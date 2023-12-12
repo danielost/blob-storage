@@ -24,17 +24,14 @@ const (
 )
 
 type Blob struct {
-	Value   json.RawMessage
-	OwnerId int64
+	Value json.RawMessage
 }
 
 func (blob Blob) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
-		Value   json.RawMessage `json:"value"`
-		OwnerId int64           `json:"owner_id"`
+		Value json.RawMessage `json:"value"`
 	}{
-		Value:   blob.Value,
-		OwnerId: blob.OwnerId,
+		Value: blob.Value,
 	})
 }
 
