@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"net"
 	"net/http"
 
@@ -9,6 +10,7 @@ import (
 	"gitlab.com/distributed_lab/logan/v3"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 	"gitlab.com/dl7850949/blob-storage/internal/config"
+	"gitlab.com/dl7850949/blob-storage/internal/data"
 	"gitlab.com/tokend/horizon-connector"
 )
 
@@ -18,6 +20,7 @@ type service struct {
 	listener net.Listener
 	db       *pgdb.DB
 	horizon  *horizon.Connector
+	infoer   data.Info
 }
 
 func (s *service) run() error {
@@ -38,6 +41,7 @@ func newService(cfg config.Config) *service {
 		listener: cfg.Listener(),
 		db:       cfg.DB(),
 		horizon:  cfg.Horizon(),
+		infoer:   NewLazyInfo(context.Background(), cfg.Log(), cfg.Horizon().System()),
 	}
 }
 
