@@ -6,9 +6,7 @@ import (
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/dl7850949/blob-storage/internal/helpers"
-	"gitlab.com/dl7850949/blob-storage/internal/middleware"
 	"gitlab.com/dl7850949/blob-storage/internal/service/requests"
-	"gitlab.com/dl7850949/blob-storage/resources"
 )
 
 func GetBlob(w http.ResponseWriter, r *http.Request) {
@@ -18,27 +16,24 @@ func GetBlob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	blob, jsonErr := helpers.GetBlobById(r, request.BlobID)
-	if jsonErr != nil {
-		ape.RenderErr(w, jsonErr)
-		return
-	}
-
-	ownerId, err := middleware.GetIdFromJWT(r)
+	byteResponse, err := helpers.BlobsOps(r).GetById(request.BlobID)
 	if err != nil {
-		helpers.Log(r).WithError(err).Error("failed to get id from JWT")
+		helpers.Log(r).WithError(err).Error("failed to get blob")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
-	if blob.OwnerId != ownerId {
-		helpers.Log(r).Warn("operation forbidden")
-		ape.RenderErr(w, problems.Forbidden())
+	if len(byteResponse) == 0 {
+		helpers.Log(r).Info("blob not found")
+		ape.RenderErr(w, problems.NotFound())
 		return
 	}
 
-	response := resources.BlobResponse{
-		Data: newBlobModel(blob, ownerId),
+	response, err := helpers.Unmarshal(byteResponse)
+	if err != nil {
+		helpers.Log(r).WithError(err).Error("failed to unmarshal TokenD response")
+		ape.RenderErr(w, problems.InternalError())
+		return
 	}
 
 	ape.Render(w, response)

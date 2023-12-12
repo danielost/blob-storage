@@ -6,7 +6,6 @@ import (
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
 	"gitlab.com/dl7850949/blob-storage/internal/helpers"
-	"gitlab.com/dl7850949/blob-storage/internal/middleware"
 	"gitlab.com/dl7850949/blob-storage/internal/service/requests"
 )
 
@@ -17,29 +16,16 @@ func DeleteBlob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	blob, jsonErr := helpers.GetBlobById(r, request.BlobID)
-	if jsonErr != nil {
-		ape.RenderErr(w, jsonErr)
-		return
-	}
-
-	ownerId, err := middleware.GetIdFromJWT(r)
+	waitForIngest := true
+	status, _, err := helpers.BlobsOps(r).Delete(request.BlobID, &waitForIngest)
 	if err != nil {
-		helpers.Log(r).WithError(err).Error("failed to get id from JWT")
+		helpers.Log(r).WithError(err).Error("failed to delete blob")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
-	if blob.OwnerId != ownerId {
-		helpers.Log(r).Warn("operation forbidden")
-		ape.RenderErr(w, problems.Forbidden())
-		return
-	}
-
-	err = helpers.BlobsQ(r).Delete(request.BlobID)
-	if err != nil {
-		helpers.Log(r).WithError(err).Error("failed to delete blob from DB")
-		ape.RenderErr(w, problems.InternalError())
+	if status == http.StatusBadRequest {
+		ape.RenderErr(w, problems.NotFound())
 		return
 	}
 

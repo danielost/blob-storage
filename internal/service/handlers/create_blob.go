@@ -2,15 +2,13 @@ package handlers
 
 import (
 	"net/http"
-	"time"
 
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
-	"gitlab.com/dl7850949/blob-storage/internal/data"
+	horizon2 "gitlab.com/dl7850949/blob-storage/internal/data/horizon"
 	"gitlab.com/dl7850949/blob-storage/internal/helpers"
 	"gitlab.com/dl7850949/blob-storage/internal/middleware"
 	"gitlab.com/dl7850949/blob-storage/internal/service/requests"
-	"gitlab.com/dl7850949/blob-storage/resources"
 )
 
 func CreateBlob(w http.ResponseWriter, r *http.Request) {
@@ -27,38 +25,25 @@ func CreateBlob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	blob := data.Blob{
-		CreatedAt: time.Now().UTC(),
-		Value:     request.Data.Attributes.Value,
-		OwnerId:   userId,
+	blob := horizon2.Blob{
+		Value:   request.Data.Attributes.Value,
+		OwnerId: userId,
 	}
 
-	resultBlob, err := helpers.BlobsQ(r).Insert(blob)
+	waitForIngest := true
+	_, byteResponse, err := helpers.BlobsOps(r).Create(blob, &waitForIngest)
 	if err != nil {
 		helpers.Log(r).WithError(err).Error("failed to insert blob")
 		ape.RenderErr(w, problems.InternalError())
 		return
 	}
 
-	response := resources.BlobResponse{
-		Data: newBlobModel(resultBlob, userId),
+	response, err := helpers.Unmarshal(byteResponse)
+	if err != nil {
+		helpers.Log(r).WithError(err).Error("failed to unmarshal TokenD response")
+		ape.RenderErr(w, problems.InternalError())
+		return
 	}
 
 	ape.Render(w, response)
-}
-
-func newBlobModel(blob *data.Blob, userId int64) resources.Blob {
-	relationshipKey := resources.NewKeyInt64(userId, resources.USER)
-	return resources.Blob{
-		Key: resources.NewKeyInt64(blob.ID, resources.BLOB),
-		Attributes: resources.BlobAttributes{
-			CreatedAt: blob.CreatedAt,
-			Value:     blob.Value,
-		},
-		Relationships: resources.BlobRelationships{
-			Owner: resources.Relation{
-				Data: &relationshipKey,
-			},
-		},
-	}
 }

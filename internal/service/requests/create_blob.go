@@ -18,7 +18,7 @@ func NewCreateBlobRequest(r *http.Request) (CreateBlobRequest, error) {
 	var request CreateBlobRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		return CreateBlobRequest{}, errors.Wrap(err, "failed to unmarshal")
+		return request, errors.Wrap(err, "failed to unmarshal")
 	}
 
 	return request, validateCreateBlobRequest(request)
