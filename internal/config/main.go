@@ -17,7 +17,6 @@ type Config interface {
 	types.Copuser
 	comfig.Listenerer
 	Horizon() *horizon.Connector
-	// HorizonClient() client.Client
 }
 
 type config struct {
@@ -30,7 +29,6 @@ type config struct {
 
 	// runtime-initialized instances
 	horizon *horizon.Connector
-	// horizonClient  client.Client
 }
 
 func New(getter kv.Getter) Config {
