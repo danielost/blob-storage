@@ -17,6 +17,12 @@ const (
 	BLOB = iota
 )
 
+// endpoints
+const (
+	TRANSACTIONS = "/v3/transactions"
+	DATA         = "/v3/data"
+)
+
 type Blob struct {
 	Value   json.RawMessage
 	OwnerId int64
@@ -45,8 +51,7 @@ func New(tx *xdrbuild.Transaction, horizon *horizon.Connector) BlobsOps {
 }
 
 func (ops BlobsOps) Create(blob Blob, waitForIngest *bool) (int, []byte, error) {
-	tx := ops.Tx
-	tx = tx.Op(&xdrbuild.CreateData{
+	tx := ops.Tx.Op(&xdrbuild.CreateData{
 		Type:  BLOB,
 		Value: blob,
 	})
@@ -56,40 +61,25 @@ func (ops BlobsOps) Create(blob Blob, waitForIngest *bool) (int, []byte, error) 
 		return http.StatusInternalServerError, nil, errors.Wrap(err, "failed to build tx envelope")
 	}
 
-	status, response, err := ops.Horizon.Client().PostJSON("/v3/transactions", &regources.SubmitTransactionBody{
+	return ops.Horizon.Client().PostJSON(TRANSACTIONS, &regources.SubmitTransactionBody{
 		Tx:            envelope,
 		WaitForIngest: waitForIngest,
 	})
-	if err != nil {
-		return http.StatusInternalServerError, nil, errors.Wrap(err, "failed to insert blob")
-	}
-
-	return status, response, nil
 }
 
 func (ops BlobsOps) Get(pageParams pgdb.OffsetPageParams) ([]byte, error) {
-	endpoint := fmt.Sprintf("/v3/data?page[limit]=%d&page[number]=%d&page[order]=%s", pageParams.Limit, pageParams.PageNumber, pageParams.Order)
-	response, err := ops.Horizon.Client().Get(endpoint)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get blob list")
-	}
-
-	return response, nil
+	endpoint := fmt.Sprintf(DATA+"?page[limit]=%d&page[number]=%d&page[order]=%s",
+		pageParams.Limit, pageParams.PageNumber, pageParams.Order)
+	return ops.Horizon.Client().Get(endpoint)
 }
 
 func (ops BlobsOps) GetById(id int64) ([]byte, error) {
-	endpoint := fmt.Sprintf("/v3/data/%d", id)
-	response, err := ops.Horizon.Client().Get(endpoint)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get blob")
-	}
-
-	return response, nil
+	endpoint := fmt.Sprintf(DATA+"/%d", id)
+	return ops.Horizon.Client().Get(endpoint)
 }
 
 func (ops BlobsOps) Delete(id int64, waitForIngest *bool) (int, []byte, error) {
-	tx := ops.Tx
-	tx = tx.Op(&xdrbuild.RemoveData{
+	tx := ops.Tx.Op(&xdrbuild.RemoveData{
 		ID: uint64(id),
 	})
 
@@ -98,13 +88,8 @@ func (ops BlobsOps) Delete(id int64, waitForIngest *bool) (int, []byte, error) {
 		return http.StatusInternalServerError, nil, errors.Wrap(err, "failed to build tx envelope")
 	}
 
-	status, response, err := ops.Horizon.Client().PostJSON("/v3/transactions", &regources.SubmitTransactionBody{
+	return ops.Horizon.Client().PostJSON(TRANSACTIONS, &regources.SubmitTransactionBody{
 		Tx:            envelope,
 		WaitForIngest: waitForIngest,
 	})
-	if err != nil {
-		return http.StatusInternalServerError, nil, errors.Wrap(err, "failed to delete blob")
-	}
-
-	return status, response, nil
 }
