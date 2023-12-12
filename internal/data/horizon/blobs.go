@@ -43,8 +43,8 @@ type BlobsOps struct {
 	Horizon *horizon.Connector
 }
 
-func New(tx *xdrbuild.Transaction, horizon *horizon.Connector) BlobsOps {
-	return BlobsOps{
+func New(tx *xdrbuild.Transaction, horizon *horizon.Connector) *BlobsOps {
+	return &BlobsOps{
 		Tx:      tx,
 		Horizon: horizon,
 	}

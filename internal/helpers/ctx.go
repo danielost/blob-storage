@@ -26,15 +26,15 @@ const (
 	coreInfoCtxKey
 )
 
-func BlobsOps(r *http.Request) horizon2.BlobsOps {
+func BlobsOps(r *http.Request) *horizon2.BlobsOps {
 	txbuilderbuilder := r.Context().Value(txBuilderCtxKey).(data.Infobuilder)
 	info := r.Context().Value(coreInfoCtxKey).(data.Info)
 	coreInfo, err := info.Info()
 	master, err := keypair.ParseAddress(coreInfo.MasterAccountID)
 
 	if err != nil {
-		//TODO handle error
-		panic(err)
+		Log(r).WithError(err).Error("error parsing address")
+		return nil
 	}
 
 	tx := txbuilderbuilder(info, master)
